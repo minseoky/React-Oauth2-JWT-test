@@ -27,3 +27,4 @@
 프론트엔드: `npm install` -> `npm start` (-p 3000)
 
 백엔드: easymap spring boot 프로젝트 `git clone` 후 실행 (-p 8080)
+-> rds 포트포워딩 및 `application.yml` 설정이 필요합니다. `application.yml`은 easymap 노션 백엔드 페이지에 있습니다.
