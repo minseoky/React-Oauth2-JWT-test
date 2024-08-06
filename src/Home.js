@@ -9,23 +9,22 @@ const Home = () => {
     const [jwt, setJwt] = useState('');
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get('token');
-        if (token) {
-            // JWT를 state에 저장
-            setJwt(token);
-        } else if (cookies.jwt) {
-            // 쿠키에서 JWT를 가져와서 state에 저장
-            setJwt(cookies.jwt);
+        // useEffect 훅을 사용하여 쿠키 값을 가져옵니다.
+        const jwtToken = cookies.jwt;
+        if (jwtToken) {
+            setJwt(jwtToken);
+        } else {
+            console.log("No JWT token found in cookies.");
         }
-    }, [cookies.jwt]);
+    }, [cookies]);
 
     const fetchHello = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/v1/test/hello', {
                 headers: {
                     Authorization: `Bearer ${jwt}`
-                }
+                },
+                withCredentials: true
             });
             alert(response.data);
         } catch (error) {
@@ -42,10 +41,12 @@ const Home = () => {
 
     const fetchTest = async () => {
         try {
+            console.log("JWT token in fetchTest: ", jwt);
             const response = await axios.get('http://localhost:8080/api/v1/test/test', {
                 headers: {
                     Authorization: `Bearer ${jwt}`
-                }
+                },
+                withCredentials: true
             });
             alert(JSON.stringify(response.data, null, 2));
         } catch (error) {
