@@ -12,20 +12,20 @@ const Home = () => {
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
         if (token) {
-            setCookie('jwt', token, { path: '/' });
+            // JWT를 state에 저장
             setJwt(token);
         } else if (cookies.jwt) {
+            // 쿠키에서 JWT를 가져와서 state에 저장
             setJwt(cookies.jwt);
         }
-    }, [setCookie, cookies.jwt]);
+    }, [cookies.jwt]);
 
     const fetchHello = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/v1/test/hello', {
                 headers: {
                     Authorization: `Bearer ${jwt}`
-                },
-                withCredentials: true
+                }
             });
             alert(response.data);
         } catch (error) {
@@ -45,8 +45,7 @@ const Home = () => {
             const response = await axios.get('http://localhost:8080/api/v1/test/test', {
                 headers: {
                     Authorization: `Bearer ${jwt}`
-                },
-                withCredentials: true
+                }
             });
             alert(JSON.stringify(response.data, null, 2));
         } catch (error) {
