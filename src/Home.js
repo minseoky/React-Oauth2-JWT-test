@@ -1,29 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import React from 'react';
 import axios from 'axios';
 
 const Home = () => {
-    const navigate = useNavigate();
-    const [cookies, setCookie] = useCookies(['jwt']);
-    const [jwt, setJwt] = useState('');
-
-    useEffect(() => {
-        // useEffect 훅을 사용하여 쿠키 값을 가져옵니다.
-        const jwtToken = cookies.jwt;
-        if (jwtToken) {
-            setJwt(jwtToken);
-        } else {
-            console.log("No JWT token found in cookies.");
-        }
-    }, [cookies]);
-
     const fetchHello = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/v1/test/hello', {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                },
                 withCredentials: true
             });
             alert(response.data);
@@ -41,11 +22,7 @@ const Home = () => {
 
     const fetchTest = async () => {
         try {
-            console.log("JWT token in fetchTest: ", jwt);
             const response = await axios.get('http://localhost:8080/api/v1/test/test', {
-                headers: {
-                    Authorization: `Bearer ${jwt}`
-                },
                 withCredentials: true
             });
             alert(JSON.stringify(response.data, null, 2));
