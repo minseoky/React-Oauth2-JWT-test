@@ -38,12 +38,31 @@ const Home = () => {
         }
     };
 
+    const fetchAdditionalInfo = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/user/additional-info-check', {
+                withCredentials: true
+            });
+            alert(JSON.stringify(response.data, null, 2));
+        } catch (error) {
+            if (error.response) {
+                const errorData = error.response.data;
+                console.error('Error fetching data:', errorData);
+                alert(`Error: ${errorData.message} (Code: ${errorData.code})`);
+            } else {
+                console.error('Error fetching data:', error.message);
+                alert('Failed to fetch data');
+            }
+        }
+    };
+
     return (
         <div>
             <h1>Home</h1>
             <p>You have been successfully logged in.</p>
             <button onClick={fetchHello}>Fetch Hello</button>
             <button onClick={fetchTest}>Fetch Test</button>
+            <button onClick={fetchAdditionalInfo}>AdditionalInfo</button>
         </div>
     );
 };
