@@ -61,26 +61,75 @@ const Home = () => {
         }
     };
 
-    const handlePatchUserRequiredInfo = async () => {
-        const formData = new FormData();
-
-        // JSON 데이터를 문자열로 변환 후 추가
-        const userInfoJson = JSON.stringify({
-            gender,
-            birthdate,
-            nickname
-        });
-        formData.append('userInfo', new Blob([userInfoJson], { type: 'application/json' }));
-
-        // 파일 추가
-        if (profileImage) {
-            formData.append('profileImage', profileImage);
+    // Presigned URL을 요청하고 이미지를 업로드하는 함수
+    const uploadProfileImage = async () => {
+        console.log("UPLOADPROFILE");
+        if (!profileImage) {
+            return null;
         }
 
         try {
-            const response = await axios.patch('http://localhost:8080/api/v1/user/required', formData, {
+            // Presigned URL 요청
+            const response = await axios.get('http://localhost:8080/api/v1/s3/generate-presigned-url/put', {
+                params: {
+                    fileName: profileImage.name,
+                },
                 withCredentials: true,
             });
+
+            // 서버에서 반환된 응답 구조 확인
+            console.log("Server response:", response);
+
+            // Presigned URL에서 파일 키만 추출 (e.g., '174018575.png')
+            const presignedUrl = response.data.presigned_url;
+            const url = new URL(presignedUrl);
+            const profileS3Key = url.pathname.substring(1);  // 첫 번째 '/' 제거하고 경로만 추출
+
+            console.log("Presigned URL:", presignedUrl);
+            console.log("profileS3Key:", profileS3Key);
+
+            if (!presignedUrl) {
+                throw new Error('Failed to retrieve presigned URL');
+            }
+
+            // S3에 파일 업로드
+            await axios.put(presignedUrl, profileImage, {
+                headers: {
+                    'Content-Type': profileImage.type,
+                },
+            });
+
+            // 업로드된 파일의 키를 반환
+            return profileS3Key;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Failed to upload profile image');
+            return null;
+        }
+    };
+    // 유저 정보를 패치하는 함수
+    const handlePatchUserRequiredInfo = async () => {
+        console.log("HANDLEPATCH");
+        try {
+            const profile_s3_key = await uploadProfileImage();  // 파일 키를 받아옴
+            console.log("profile_s3_key: " + profile_s3_key);
+
+            const userInfo = {
+                gender,
+                birthdate,
+                nickname,
+                profile_s3_key,  // S3에 업로드된 이미지의 키
+            };
+
+            console.log("userInfo before sending: ", JSON.stringify(userInfo));  // JSON 직렬화 후 로그 출력
+
+            const response = await axios.patch('http://localhost:8080/api/v1/user/required', userInfo, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
             alert(`Success: ${response.data.message} (Code: ${response.data.code})`);
         } catch (error) {
             if (error.response) {
