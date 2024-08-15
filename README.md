@@ -40,11 +40,11 @@
 ```javascript
 const profile_s3_key = await uploadProfileImage();  // 파일 키를 받아옴
 
-            const userInfo = {
-                gender,
-                birthdate,
-                nickname,
-                profile_s3_key,  // S3에 업로드된 이미지의 키
-            };
+const userInfo = {
+    gender,
+    birthdate,
+    nickname,
+    profile_s3_key,  // S3에 업로드된 이미지의 키
+};
 ```
 4. 서버는 받은 정보를 기반으로 유저 데이터를 업데이트합니다.
