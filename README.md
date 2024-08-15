@@ -1,6 +1,7 @@
 # OAuth2 로그인 및 JWT 발급 로직
 
 > 8.8 수정사항 : Authorization Header 대신 쿠키만 사용하기로 했습니다. 프론트에서 신경 쓸 부분이 줄었습니다.
+> 8.16 수정사항 : 이미지 업로드 로직이 추가되었습니다. 상세내용은 하단에 서술합니다.
 
 `index.js`, `App.js`: 기본 설정 및 라우팅 용입니다.  
 
@@ -31,3 +32,19 @@
 
 백엔드: easymap spring boot 프로젝트 `git clone` 후 실행 (-p 8080)
 -> rds 포트포워딩 및 `application.yml` 설정이 필요합니다. `application.yml`은 easymap 노션 백엔드 페이지에 있습니다.
+
+## 이미지 업로드 로직
+1. 사용자가 올릴 파일 이름에 UUID를 더하여 서버로부터 PUT 메서드가 가능한 PresignedURL을 발급받습니다. (서버에서 UUID를 포함하여 클라이언트로 다시 보내주는 방식도 있지만 복잡도가 증가합니다.)
+2. 벌굽벋운 PresugbedURL에 UUID+파일명 을가지는 이미지를 업로드합니다.
+3. 업로드 후 받은 이미지 URL을 추가 정보와 함께 서버로 넘깁니다. 아래 코드를 의미합니다.
+```javascript
+const profile_s3_key = await uploadProfileImage();  // 파일 키를 받아옴
+
+            const userInfo = {
+                gender,
+                birthdate,
+                nickname,
+                profile_s3_key,  // S3에 업로드된 이미지의 키
+            };
+```
+4. 서버는 받은 정보를 기반으로 유저 데이터를 업데이트합니다.
