@@ -63,7 +63,6 @@ const Home = () => {
 
     // Presigned URL을 요청하고 이미지를 업로드하는 함수
     const uploadProfileImage = async () => {
-        console.log("UPLOADPROFILE");
         if (!profileImage) {
             return null;
         }
@@ -109,10 +108,8 @@ const Home = () => {
     };
     // 유저 정보를 패치하는 함수
     const handlePatchUserRequiredInfo = async () => {
-        console.log("HANDLEPATCH");
         try {
             const profile_s3_key = await uploadProfileImage();  // 파일 키를 받아옴
-            console.log("profile_s3_key: " + profile_s3_key);
 
             const userInfo = {
                 gender,
