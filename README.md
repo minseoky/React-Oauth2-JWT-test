@@ -35,8 +35,8 @@
 
 ## 이미지 업로드 로직
 1. 사용자가 올릴 파일 이름에 UUID를 더하여 서버로부터 PUT 메서드가 가능한 PresignedURL을 발급받습니다. (서버에서 UUID를 포함하여 클라이언트로 다시 보내주는 방식도 있지만 복잡도가 증가합니다.)
-2. 벌굽벋운 PresugbedURL에 UUID+파일명 을가지는 이미지를 업로드합니다.
-3. 업로드 후 받은 이미지 URL을 추가 정보와 함께 서버로 넘깁니다. 아래 코드를 의미합니다.
+2. 벌굽벋은 PresugbedURL에 UUID+파일명을 가지는 이미지를 업로드합니다.
+3. 업로드 후 받은 이미지 URL에서 앞 부분을 제거하고 UUID+파일명만 남겨 key로 서버에 넘겨줍니다.
 ```javascript
 const profile_s3_key = await uploadProfileImage();  // 파일 키를 받아옴
 
